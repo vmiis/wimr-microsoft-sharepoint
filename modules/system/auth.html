@@ -1,0 +1,76 @@
+<div id=D__ID>
+    <script>
+        function F__ID(){
+            //--------------------------------------------------------
+            var u=window.location.origin;
+            if(u=="http://localhost:8000") u=u+"/auth.html";
+            else u=u+"/wimr-snapforms/auth.html"
+            $vm.auth_signin=function(){
+                //$vm.signin();
+                url='https://login.microsoftonline.com/common/oauth2/v2.0/authorize';
+                url+='?client_id=3bcb40c5-fec0-4b3b-ba67-f4d46d577f97'; //woolcock
+                url+='&response_type=code';
+                url+='&redirect_uri='+u;
+                url+='&scope=Sites.Read.All offline_access'; 
+                url+='&response_mode=fragment';
+                url+='&state=exchange-microsoft2-token.wimr-sharepoint';
+                url+='&nonce=678910';
+                url+='&prompt=select_account';
+                window.open(url);
+            }
+            //--------------------------------------------------------
+            $vm.auth_signout=function(){
+                sessionStorage.clear();
+                window.location.href=$vm.hosting_path+"/";
+            }
+            //------------------------------------
+            window.onmessage=function(e){
+                if (e.origin == window.location.origin){
+                    var href=e.data.href;
+                    if(href==undefined) return;
+                    var code=href.split('code=').pop();
+                    code=code.split('&')[0];
+	                var state=href.split('state=exchange').pop();
+	                state="exchange"+state.split('&')[0];
+	                state=state.split('#')[0];
+                    if(code!=undefined && state!=undefined){
+                        var cmd=state.split('.')[0];
+                        var id=state.split('.').pop();
+                        $vm.request_token(id,cmd,code,u,href,function(id,res){
+                            $vm.show_user();
+                        });
+                    }
+                }
+            }
+            //------------------------------------
+            $vm.init(function(){
+                $vm.init_status=1;
+                var id="wimr-sharepoint";
+                if(sessionStorage.getItem(id+" username")!=null)     $vm.user_name=sessionStorage.getItem(id+" username");
+                if(sessionStorage.getItem(id+" displayname")!=null)  $vm.displayname=sessionStorage.getItem(id+" displayname");
+                $vm.show_user();
+            })
+            //------------------------------------
+            $vm.request_token=function(id,cmd,code,redirect_uri,href,callback){
+                var api_name=id.split('_')[0];  //where to request
+                $vm.request({api:api_name,cmd:cmd,token:code,redirect_uri:redirect_uri},function(res){
+                    if(res.status=='ok'){
+                        switch(cmd){
+                            case "exchange-microsoft2-token":
+                                var expires_in=res.result.a.expires_in;
+                                sessionStorage.setItem(id+" oauth expire",new Date(new Date().getTime()+expires_in*1000).toLocaleString());
+                                sessionStorage.setItem(id+" oauth",JSON.stringify(res.result));
+                                sessionStorage.setItem(id+" username",res.result.user_name);
+                                sessionStorage.setItem(id+" displayname",res.result.displayname);
+                                $vm.user_name=sessionStorage.getItem(id+" username");
+                                $vm.displayname=sessionStorage.getItem(id+" displayname");
+                                callback(id);
+                                break;
+                        }
+                    }
+                })
+            }
+            //------------------------------------
+        }
+    </script>
+</div>

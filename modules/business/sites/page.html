@@ -1,0 +1,135 @@
+<div id=D__ID>
+    <div id=toolbar__ID class="navbar navbar-default">
+        <div>
+            <div style='display:inline-block;width:200px'><input id=keyword__ID type="text" class="form-control" placeholder="keyword in Name"></div>
+            <button id=query__ID type=button class="btn btn-secondary" title='Search for keyword'><i class="fa fa-search" ></i></button>
+            <span id=name__ID style='margin-left:50px; margin-right:50px;font-weight:bold;'></span> Total Number of records: <span id=total__ID></span> <span style='margin-left:30px'>(Maximum returned: 200)</span>
+            <button id=export__ID type=button class="btn btn-secondary" title='Export' style='margin-left:50px;margin-right:30px'>Export</button>
+        </div>
+    </div>
+    <div>
+        <table id="grid__ID"></table>
+    </div>
+    <script>
+        function F__ID(){
+            //-------------------------------------------------
+            var m=$vm.module_list['__MODULE__'];
+            //-------------------------------------------------
+            var name="Sites";
+            $('#name__ID').text(name);
+            var columns=`
+                Name|displayName
+                Created on|createdDateTime
+                Last modified on|lastModifiedDateTime
+                Content List|id
+                Link|webUrl
+            `
+            //-------------------------------------------------
+            var cell_render=function(i,hd,td){
+                switch(hd){
+                    case "Content List":
+                        td="<u style='cursor:pointer' r_i="+i+" m_id="+td+">"+hd+"</u>";
+                        break;
+                    case "Created on": 
+                    case "Last modified on":
+                        td=td.substr(0,10); 
+                        break;
+                    case "Link":
+                        td="<a target=_black style='text-decoration: underline;color:black' href='"+td+"'>"+td+"</a>"; 
+                        break;
+                }
+                return td;
+            }
+            //-------------------------------------------------
+            var on_u_click=function(e,u){
+                e.preventDefault();
+                e.stopPropagation();
+                var r_i=u.attr('r_i');
+                var p_name=records[parseInt(r_i)]['Name'];
+                var m_id=u.attr('m_id');
+                $vm.show_module("site-content-list",{m_id:m_id,p_name:p_name});
+            }
+            //-------------------------------------------------
+            var records=[];
+            //-------------------------------------------------
+            var query_data=function(s){
+                var path="/v1.0/sites/root/sites/?search=*";
+                if(s!='') path="/v1.0/sites/root/sites/?search="+s+"*&$orderby=name";
+                $vm.get_microsoft_data(path,function(status,data){
+                    if(status==200){
+                        var jD=JSON.parse(data);
+                        console.log(jD);
+                        records=$vm.grid_render_jd("__ID",{columns:columns,rows:jD.value,cell:cell_render});
+                        $('#total__ID').text(records.length);
+                        $('#grid__ID td').find('u').on('click',function(e){
+                            on_u_click(e,$(this))
+                        });
+                    }
+                    else console.log(status);
+                })
+            }
+            //-------------------------------------------------
+            $('#D__ID').on('load',function(){
+                query_data('');
+            })
+            //-------------------------------------------------
+            $('#query__ID').on('click',function(){
+                query_data($('#keyword__ID').val());
+            })
+            //-------------------------------------------------
+            $('#export__ID').on('click',function(){
+                if(records!=[]) $vm.download_csv(name+".csv",records);
+            })
+            //-------------------------------------------------
+        }
+    </script>
+    <style>
+        #D__ID{
+            height:100%;
+            background-color:#fff;
+        }
+        #toolbar__ID{
+            background-color:#ccc;
+            padding:5px 10px;
+            margin-bottom:0px;
+            overflow:hidden
+        }
+        #D__ID table{
+            font-size:13px;
+            font-family: Helvetica, Arial, sans-serif;
+        }
+        #grid__ID{
+            width:100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+            margin: 0;
+            border-width: 0;
+        }
+        #grid__ID th{
+            font-weight: bold;
+            background-color:#EEE;
+            padding:5px;
+            border: 1px solid #CCC;
+        }
+        #grid__ID td{
+            font-weight: 300;
+            padding:3px;
+            border: 1px solid #CCC;
+            vertical-align: top;
+            white-space: pre;
+            background-color: white;
+        }
+        #grid__ID td a{
+            color:#000;
+        }
+        #grid__ID tr:hover { 
+            background-color:#EEE; 
+        }        
+        
+        #grid__ID tr td:first-child{
+            padding-left:10px;
+            padding-right:10px;
+            background-color:#EEE;
+        }
+    </style>
+</div>
