@@ -5,12 +5,11 @@
     var m=$vm.module_list;
     var api="wimr";
     //-------------------------------------------------------------------------------------
-    m[p+"sites"]             ={url:H+"/business/sites/page.html",form_module:'jsonv',prefix:p};
-    m[p+"site-content-list"] ={url:H+"/business/site-content-list/page.html",form_module:'jsonv',prefix:p};
-    m[p+"item-list"]         ={url:H+"/business/item-list/page.html",form_module:'jsonv',prefix:p};
-    m[p+"incident-reports"]  ={url:H+"/business/incident-reports/page.html",form_module:'jsonv',prefix:p};
-    m[p+"communal-order"]    ={url:H+"/business/communal-order/page.html",form_module:'jsonv',prefix:p};
-    
-
-    
+    m[p+"sites"]                ={url:H+"/business/sites/page.html",form_module:'jsonv',prefix:p};
+    m[p+"site-content-list"]    ={url:H+"/business/site-content-list/page.html",form_module:'jsonv',prefix:p};
+    m[p+"item-list"]            ={url:H+"/business/item-list/page.html",form_module:'jsonv',prefix:p};
+    m[p+"incident-reports"]     ={url:H+"/business/incident-reports/page.html",form_module:'jsonv',prefix:p};
+    m[p+"communal-order"]       ={url:H+"/business/communal-order/page.html",form_module:'jsonv',prefix:p};
+    m[p+"first-aid-officers"]   ={url:H+"/business/first-aid-officers/page.html",form_module:'jsonv',prefix:p};
+    m[p+"emergency-wardens"]    ={url:H+"/business/emergency-wardens/page.html",form_module:'jsonv',prefix:p};
 })();
