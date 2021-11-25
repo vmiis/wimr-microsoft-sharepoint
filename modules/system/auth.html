@@ -46,6 +46,8 @@
             $vm.init(function(){
                 $vm.init_status=1;
                 var id="wimr-sharepoint";
+                $vm.user_name=undefined;
+                $vm.displayname=undefined;
                 if(sessionStorage.getItem(id+" username")!=null)     $vm.user_name=sessionStorage.getItem(id+" username");
                 if(sessionStorage.getItem(id+" displayname")!=null)  $vm.displayname=sessionStorage.getItem(id+" displayname");
                 $vm.show_user();
